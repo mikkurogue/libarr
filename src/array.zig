@@ -98,11 +98,9 @@ pub fn FixedArray(comptime T: type) type {
             }
 
             // shift elements 1 place to the right each
-            var i: usize = self.len;
-            while (i > 0) : (i -= 1) {
-                self.items[i] = self.items[i - 1];
-            }
-
+            // TODO: add shift index to start from - this one defaults 0
+            // try rotate_right(T, self);
+            try shift_right(T, self);
             //insert the new value
             self.items[0] = val;
             self.len += 1;
@@ -128,7 +126,77 @@ pub fn FixedArray(comptime T: type) type {
             self.items[idx] = val;
         }
 
+        // remove an item in the array at given index
+        // then shift items to the left to re-organise indeces
+        pub fn remove_at(self: *Self, idx: u8) !void {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            self.items[idx] = undefined;
+            self.len -= 1;
+        }
+
         // Advanced array methods
         // TODO: Add these methods
+
+        /// shifts an item in the array to a different index towards the head
+        /// this preserves values in the array, so it is more of a circular shift
+        /// TODO_ add index to start shift
+        pub fn left_shift(self: *Self) !void {
+            try rotate_left(T, self);
+        }
     };
+}
+
+/// TODO: add index to shift from, starting point
+fn rotate_left(comptime T: type, arr: *FixedArray(T)) !void {
+    if (arr.len == 0) {
+        return error.NoItems;
+    }
+
+    // Store the first element to wrap it around
+    const temp = arr.items[0];
+
+    // Shift elements to the left
+    var i: usize = 0;
+    while (i < arr.len - 1) : (i += 1) {
+        arr.items[i - 1] = arr.items[i];
+    }
+
+    // Place the first element at the last index
+    arr.items[arr.len - 1] = temp;
+}
+
+/// TODO: add index to shift from, starting point
+fn rotate_right(comptime T: type, arr: *FixedArray(T)) !void {
+    if (arr.len == 0) {
+        return error.NoItems;
+    }
+
+    const last_index = arr.len - 1;
+
+    // Store the last element to wrap it around
+    const temp = arr.items[last_index];
+
+    // Shift elements to the right
+    var i: usize = last_index;
+    while (i > 0) : (i -= 1) {
+        arr.items[i + 1] = arr.items[i];
+    }
+
+    // Place the last element at the first index
+    arr.items[0] = temp;
+}
+
+/// FIXME: temp function here - this is the initial shift for pushing to head
+fn shift_right(comptime T: type, arr: *FixedArray(T)) !void {
+    if (arr.len == 0) {
+        return Error.NoItems;
+    }
+
+    var i: usize = arr.len;
+    while (i > 0) : (i -= 1) {
+        arr.items[i] = arr.items[i - 1];
+    }
 }
