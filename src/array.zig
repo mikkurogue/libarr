@@ -285,6 +285,8 @@ fn shift_right_from(comptime T: type, arr: *FixedArray(T), idx: usize) !void {
 
 /// when shifting right, and we may need more space in the array
 /// double the capacity in memory for the array
+/// TODO: think if we want to even re-allocate for FixedArray, or if we just make
+/// FixedArray dynamic to be either Fixed or not, so renaming to Array
 fn shift_right_reallocate(comptime T: type, arr: *FixedArray(T)) !void {
     if ((arr.len + 1) > arr.capacity) {
         var new_buf_items = try arr.allocator.alloc(T, arr.capacity * 2);
