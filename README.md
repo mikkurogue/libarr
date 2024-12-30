@@ -13,20 +13,19 @@ I am however looking for pointers, tips, tricks or any resource to help me make 
 
 ## Docs
 
-Currently we have 2 types of Arrays. Only 1 right now has any real support.
 
-These are `Array` and `FixedArray`. The definitions of these will be "clearer" at some point (soon tm).
-I will only document the current main working type.
+### Array
 
-### FixedArray
+A Array is an instance of an Array that has a fixed size.
 
-A FixedArray is an instance of an Array that has a fixed length, and does not allow for reallocation
-of memory (capacity). This is essentially a fixed length array, but in size depending on the type of array it is.
+This is essentially a fixed length array, but in size depending on the type of array it is.
+
+There are ways to re-allocate more capacity for this array.
 
 ```zig
-struct FixedArray(T)
+struct Array(T)
 ```
-A Fixed array is a generic struct that takes in a `comptime T` of the type of array it is.
+An array is a generic struct that takes in a `comptime T` of the type of array it is.
 
 #### Members
 ```zig
@@ -56,7 +55,7 @@ The capacity of memory, required by the allocator.
 #### Member methods
 
 ```zig
-init(allocator: Allocator, capacity: usize) !FixedArray(T)
+init(allocator: Allocator, capacity: usize) !Array(T)
 ```
 
 Function to initialise the array, this allocates and sets the basic default values. Capacity here is the maximum capacity of the array in memory.
