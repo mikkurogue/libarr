@@ -1,7 +1,7 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
-pub const Error = error{ InsufficientCapacity, NoItems };
+pub const Error = error{ InsufficientCapacity, NoItems, IndexOutOfBounds, NextIndexOutOfBounds, PrevIndexOutOfBounds };
 
 /// Basic Array, initial capacity is 100
 /// dynamically allocate new memory when required
@@ -158,6 +158,58 @@ pub fn FixedArray(comptime T: type) type {
         pub fn left_shift(self: *Self) !void {
             try rotate_left(T, self);
         }
+
+        /// iterate to next item in array
+        pub fn next(self: *Self, index: usize) !void {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            if (index == self.len) {
+                return Error.NextIndexOutOfBounds;
+            }
+
+            // FIXME: make the iterator actually iterate lol
+            self[index + 1];
+        }
+
+        /// iterate to previous item in array
+        pub fn prev(self: *Self, index: usize) !void {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            if (self.len - 1 == -1) {
+                return Error.PrevIndexOutOfBounds;
+            }
+
+            // FIXME: make iterator actually iterate lol
+            self[index - 1];
+        }
+
+        pub fn peek_next(self: *Self, index: usize) !T {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            if (index == self.len) {
+                return Error.NextIndexOutOfBounds;
+            }
+
+            return self[index + 1];
+        }
+
+        pub fn peek_prev(self: *Self, index: usize) !void {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            if (self.len - 1 == -1) {
+                return Error.PrevIndexOutOfBounds;
+            }
+
+            return self[index - 1];
+        }
     };
 }
 
@@ -183,7 +235,7 @@ fn rotate_left(comptime T: type, arr: *FixedArray(T)) !void {
 /// TODO: add index to shift from, starting point
 fn rotate_right(comptime T: type, arr: *FixedArray(T)) !void {
     if (arr.len == 0) {
-        return error.NoItems;
+        return Error.NoItems;
     }
 
     const last_index = arr.len - 1;
