@@ -65,6 +65,8 @@ Function to initialise the array, this allocates and sets the basic default valu
 deinit() !void
 ```
 
+Destruct function for the allocator to free the memory. Recommended to always defer this once initialised.
+
 ```zig
 resize_dynamic() !void
 ```
@@ -77,7 +79,6 @@ resize_abs(add_to_capacity: usize) !void
 
 Resize the array based on new capacity to add to existing capacity.
 
-Destruct function for the allocator to free the memory. Recommended to always defer this once initialised.
 
 ```zig
 push(val: T) !void
