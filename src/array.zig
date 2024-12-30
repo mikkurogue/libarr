@@ -159,32 +159,11 @@ pub fn FixedArray(comptime T: type) type {
             try rotate_left(T, self);
         }
 
-        /// iterate to next item in array
-        pub fn next(self: *Self, index: usize) !void {
-            if (self.len == 0) {
-                return Error.NoItems;
-            }
-
-            if (index == self.len) {
-                return Error.NextIndexOutOfBounds;
-            }
-
-            // FIXME: make the iterator actually iterate lol
-            self[index + 1];
-        }
-
-        /// iterate to previous item in array
-        pub fn prev(self: *Self, index: usize) !void {
-            if (self.len == 0) {
-                return Error.NoItems;
-            }
-
-            if (self.len - 1 == -1) {
-                return Error.PrevIndexOutOfBounds;
-            }
-
-            // FIXME: make iterator actually iterate lol
-            self[index - 1];
+        pub fn iterator(self: *Self) ArrIterator(T) {
+            return ArrIterator(T){
+                // only iterate over valid values
+                .items = self.items[0..self.len],
+            };
         }
 
         pub fn peek_next(self: *Self, index: usize) !T {
@@ -196,10 +175,10 @@ pub fn FixedArray(comptime T: type) type {
                 return Error.NextIndexOutOfBounds;
             }
 
-            return self[index + 1];
+            return self.items[index + 1];
         }
 
-        pub fn peek_prev(self: *Self, index: usize) !void {
+        pub fn peek_prev(self: *Self, index: usize) !T {
             if (self.len == 0) {
                 return Error.NoItems;
             }
@@ -208,7 +187,26 @@ pub fn FixedArray(comptime T: type) type {
                 return Error.PrevIndexOutOfBounds;
             }
 
-            return self[index - 1];
+            return self.items[index - 1];
+        }
+    };
+}
+
+pub fn ArrIterator(comptime T: type) type {
+    return struct {
+        items: []const T,
+        // needle ?
+        index: usize = 0,
+
+        const Self = @This();
+
+        pub fn next(self: *Self) ?T {
+            if (self.index >= self.items.len) {
+                return null;
+            }
+            const value = self.items[self.index];
+            self.index += 1;
+            return value;
         }
     };
 }
