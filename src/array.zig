@@ -3,8 +3,8 @@ const Allocator = std.mem.Allocator;
 
 pub const Error = error{ InsufficientCapacity, NoItems };
 
-/// Basic Array, no fixed length or capacity. The capacity here will be
-/// calculated dynamically.
+/// Basic Array, initial capacity is 100
+/// dynamically allocate new memory when required
 pub fn Array(comptime T: type) type {
     return struct {
         allocator: Allocator,
@@ -14,7 +14,7 @@ pub fn Array(comptime T: type) type {
         const Self = @This();
 
         pub fn init(allocator: Allocator) !Array(T) {
-            var buffer = try allocator.alloc(T);
+            var buffer = try allocator.alloc(T, 100);
 
             return .{ .allocator = allocator, .items = buffer[0..], .len = 0 };
         }
@@ -24,15 +24,11 @@ pub fn Array(comptime T: type) type {
             self.len += 1;
         }
 
-        pub fn prepend(self: *Self, val: T) void {
-            // shift elements 1 place to the right each
-            var i: usize = self.len;
-            while (i > 0) : (i -= 1) {
-                self.items[i] = self.items[i - 1];
-            }
-
-            //insert the new value
-            self.items[0] = val;
+        /// push new item to head of array.
+        /// if size exceeds capacity, then reallocate the size
+        pub fn push_at(self: *Self, idx: usize, val: T) !void {
+            try shift_right_reallocate(T, self, idx);
+            self.items[idx] = val;
             self.len += 1;
         }
 
@@ -234,7 +230,6 @@ fn shift_right_from(comptime T: type, arr: *FixedArray(T), idx: usize) !void {
 
 /// when shifting right, and we may need more space in the array
 /// double the capacity in memory for the array
-/// TODO: make arr be FixedArray | Array
 fn shift_right_reallocate(comptime T: type, arr: *FixedArray(T)) !void {
     if ((arr.len + 1) > arr.capacity) {
         var new_buf_items = try arr.allocator.alloc(T, arr.capacity * 2);

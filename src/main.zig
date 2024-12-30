@@ -6,17 +6,19 @@ const Array = @import("array.zig");
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
-    const fixed_arr = Array.FixedArray(u8);
-    var arr = try fixed_arr.init(allocator, 5);
+    // const fixed_arr = Array.FixedArray(u8);
+    // var arr = try fixed_arr.init(allocator, 5);
+    const a = Array.Array(u8);
+    var arr = try a.init(allocator);
     defer arr.deinit();
 
     try arr.push(1);
     try arr.push(2);
     try arr.push(4);
 
-    try arr.push_at(2, 3);
+    // try arr.push_at(2, 3);
 
-    std.debug.print("FixedArray: {any}\n", .{arr.items[0..arr.len]});
+    std.debug.print("Arr: {any}\n", .{arr.items[0..arr.len]});
     // const p = arr.push_head(1) catch |err| {
     //     std.debug.print("could not push to head: {any}\n", .{err});
     // };
