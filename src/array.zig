@@ -71,6 +71,37 @@ pub fn FixedArray(comptime T: type) type {
             self.allocator.free(self.items);
         }
 
+        /// resizes the array to by a "dynamic" value
+        /// aka double it
+        pub fn resize_dynamic(self: *Self) !void {
+            if ((self.len + 1) > self.capacity) {
+                var new_buf_items = try self.allocator.alloc(T, self.capacity * 2);
+                @memcpy(
+                    new_buf_items[0..self.len],
+                    self.items,
+                );
+
+                self.allocator.free(self.items);
+                self.items = new_buf_items;
+                self.capacity = self.capacity * 2;
+            }
+        }
+
+        /// resize the array by adding more size to the capacity
+        pub fn resize_abs(self: *Self, add_to_capacity: usize) !void {
+            if ((self.len + 1) > self.capacity) {
+                var new_buf_items = try self.allocator.alloc(T, self.capacity + add_to_capacity);
+                @memcpy(
+                    new_buf_items[0..self.len],
+                    self.items,
+                );
+
+                self.allocator.free(self.items);
+                self.items = new_buf_items;
+                self.capacity = self.capacity * 2;
+            }
+        }
+
         // Basic array methods
 
         /// add a new item of type initialised array value to end of array
