@@ -3,49 +3,8 @@ const Allocator = std.mem.Allocator;
 
 pub const Error = error{ InsufficientCapacity, NoItems, IndexOutOfBounds, NextIndexOutOfBounds, PrevIndexOutOfBounds };
 
-/// Basic Array, initial capacity is 100
-/// dynamically allocate new memory when required
-pub fn Array(comptime T: type) type {
-    return struct {
-        allocator: Allocator,
-        items: []T,
-        len: usize,
-
-        const Self = @This();
-
-        pub fn init(allocator: Allocator) !Array(T) {
-            var buffer = try allocator.alloc(T, 100);
-
-            return .{ .allocator = allocator, .items = buffer[0..], .len = 0 };
-        }
-
-        pub fn push(self: *Self, val: T) void {
-            self.items[self.len] = val;
-            self.len += 1;
-        }
-
-        /// push new item to head of array.
-        /// if size exceeds capacity, then reallocate the size
-        pub fn push_at(self: *Self, idx: usize, val: T) !void {
-            try shift_right_reallocate(T, self, idx);
-            self.items[idx] = val;
-            self.len += 1;
-        }
-
-        pub fn pop(self: *Self) void {
-            if (self.len == 0) return;
-
-            self.items[self.len - 1] = undefined;
-            self.len -= 1;
-        }
-
-        pub fn deinit(self: *Self) void {
-            self.allocator.free(self.items);
-        }
-    };
-}
-
 /// An array with a Fixed size given on implementation.
+/// exposes methods to dynamically reallocate
 pub fn FixedArray(comptime T: type) type {
     return struct {
         allocator: Allocator,
