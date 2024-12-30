@@ -1,6 +1,14 @@
 # libarr - what?
 
-Why? Because im a midwit
+Why? Because im a midwit. This is a "library" I am building to learn some Zig constructs.
+
+This project is not at all usable for any production environment or product, so if you do decide that the features/functions here are somewhat usable then do use this at your own risk.
+
+As this is not a package or anything official, you can just copy and paste the code. It is "unlicensed" and therefore I do not request any type of commendation for usage.
+
+You can however feel free to link to this repository if you feel so inclined, but again; that's completely optional and in all honesty not important to me.
+
+I am however looking for pointers, tips, tricks or any resource to help me make this somewhat usable maybe in the future, or at least as a reference to upcoming projects.
 
 
 ## Docs
