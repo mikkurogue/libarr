@@ -65,7 +65,7 @@ pub fn FixedArray(comptime T: type) type {
         pub fn init(allocator: Allocator, capacity: usize) !FixedArray(T) {
             var buffer = try allocator.alloc(T, capacity);
 
-            return .{ .allocator = allocator, .items = buffer[0..], .len = 0, .capacity = capacity };
+            return .{ .allocator = allocator, .items = buffer[0..capacity], .len = 0, .capacity = capacity };
         }
 
         /// deinitialise the current array
@@ -103,6 +103,22 @@ pub fn FixedArray(comptime T: type) type {
             try shift_right(T, self);
             //insert the new value
             self.items[0] = val;
+            self.len += 1;
+        }
+
+        /// add a new item of type initialised array value to given index
+        /// position of array.
+        /// requires space to complete operation in array, otherwise return
+        /// InsufficientCapacity error.
+        /// This does not re-allocate dynamically
+        /// Maybe will make it that last item in array is popped to avoid err
+        pub fn push_at(self: *Self, idx: usize, val: T) !void {
+            if ((self.len + 1) > self.capacity) {
+                return Error.InsufficientCapacity;
+            }
+
+            try shift_right_from(T, self, idx);
+            self.items[idx] = val;
             self.len += 1;
         }
 
@@ -189,7 +205,7 @@ fn rotate_right(comptime T: type, arr: *FixedArray(T)) !void {
     arr.items[0] = temp;
 }
 
-/// FIXME: temp function here - this is the initial shift for pushing to head
+/// shift all items from the start of the array 1 position to the right
 fn shift_right(comptime T: type, arr: *FixedArray(T)) !void {
     if (arr.len == 0) {
         return Error.NoItems;
@@ -199,4 +215,42 @@ fn shift_right(comptime T: type, arr: *FixedArray(T)) !void {
     while (i > 0) : (i -= 1) {
         arr.items[i] = arr.items[i - 1];
     }
+}
+
+fn shift_right_from(comptime T: type, arr: *FixedArray(T), idx: usize) !void {
+    if (arr.len == 0) {
+        return Error.NoItems;
+    }
+
+    // if (idx >= arr.len) {
+    //     return Error.IndexOutOfBounds;
+    // }
+
+    var i: usize = arr.len;
+    while (i > idx) : (i -= 1) {
+        arr.items[i] = arr.items[i - 1];
+    }
+}
+
+/// when shifting right, and we may need more space in the array
+/// double the capacity in memory for the array
+/// TODO: make arr be FixedArray | Array
+fn shift_right_reallocate(comptime T: type, arr: *FixedArray(T)) !void {
+    if ((arr.len + 1) > arr.capacity) {
+        var new_buf_items = try arr.allocator.alloc(T, arr.capacity * 2);
+        @memcpy(
+            new_buf_items[0..arr.len],
+            arr.items,
+        );
+
+        arr.allocator.free(arr.items);
+        arr.items = new_buf_items;
+        arr.capacity = arr.capacity * 2;
+    }
+
+    const res = shift_right(T, arr) catch |err| {
+        std.debug.print("Failed to add to array: {any}", .{err});
+        return;
+    };
+    _ = res;
 }
