@@ -159,6 +159,7 @@ pub fn FixedArray(comptime T: type) type {
             try rotate_left(T, self);
         }
 
+        /// initialise the iterator struct for array
         pub fn iterator(self: *Self) ArrIterator(T) {
             return ArrIterator(T){
                 // only iterate over valid values
@@ -166,6 +167,7 @@ pub fn FixedArray(comptime T: type) type {
             };
         }
 
+        /// see next value in list from a given index
         pub fn peek_next(self: *Self, index: usize) !T {
             if (self.len == 0) {
                 return Error.NoItems;
@@ -178,6 +180,7 @@ pub fn FixedArray(comptime T: type) type {
             return self.items[index + 1];
         }
 
+        /// see previous value in list from a given index
         pub fn peek_prev(self: *Self, index: usize) !T {
             if (self.len == 0) {
                 return Error.NoItems;
