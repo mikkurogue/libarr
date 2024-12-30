@@ -62,8 +62,20 @@ init(allocator: Allocator, capacity: usize) !FixedArray(T)
 Function to initialise the array, this allocates and sets the basic default values. Capacity here is the maximum capacity of the array in memory.
 
 ```zig
-deinit() void
+deinit() !void
 ```
+
+```zig
+resize_dynamic() !void
+```
+
+Resize the array dynamically by doubling the capacity.
+
+```zig
+resize_abs(add_to_capacity: usize) !void
+```
+
+Resize the array based on new capacity to add to existing capacity.
 
 Destruct function for the allocator to free the memory. Recommended to always defer this once initialised.
 
