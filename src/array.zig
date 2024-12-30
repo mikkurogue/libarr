@@ -192,7 +192,7 @@ pub fn FixedArray(comptime T: type) type {
     };
 }
 
-pub fn ArrIterator(comptime T: type) type {
+fn ArrIterator(comptime T: type) type {
     return struct {
         items: []const T,
         // needle ?
