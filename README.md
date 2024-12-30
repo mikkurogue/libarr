@@ -29,65 +29,96 @@ struct FixedArray(T)
 A Fixed array is a generic struct that takes in a `comptime T` of the type of array it is.
 
 #### Members
-`allocator: std.mem.Allocator`
+```zig
+allocator: std.mem.Allocator
+```
 
 An allocator must be provided to allocate memory.
 
-`items: []T`
+```zig
+items: []T
+```
 
 A slice of type T provided by the generic.
 
-`len: usize`
+```zig
+len: usize
+```
 
 The length of the amount of items in the array, also accessible by `items.len`.
 
-`capacity`
+```zig
+capacity: u8
+```
 
 The capacity of memory, required by the allocator.
 
 #### Member methods
 
-`init(allocator: Allocator, capacity: usize) !FixedArray(T)`
+```zig
+init(allocator: Allocator, capacity: usize) !FixedArray(T)
+```
 
 Function to initialise the array, this allocates and sets the basic default values. Capacity here is the maximum capacity of the array in memory.
 
-`deinit() void`
+```zig
+deinit() void
+```
 
 Destruct function for the allocator to free the memory. Recommended to always defer this once initialised.
 
-`push(val: T) !void` 
+```zig
+push(val: T) !void
+```
 
 Push a new value to the end of the array. If this operation would exceed capacity, then return an error.
 
-`push_head(val: T) !void`
+```zig
+push_head(val: T) !void
+```
 
 Push a new value to the head (start) of the array. If this operation would exceed capacity, then return an error.
 
-`pop() !void`
+```zig
+pop() !void
+```
 
 Pop the last item out of the array.
 
-`replace_at(idx: u8, val: T) !void`
+```zig
+replace_at(idx: u8, val: T) !void
+```
 
 Replace an item in the array at a given index.
 
-`remove_at(idx: u8) !void`
+```zig
+remove_at(idx: u8) !void
+```
 
 Remove an item in the array at a given index.
 
-`left_shift() !void`
+```zig
+left_shift() !void
+```
 
 Move all items 1 place to the left in the array. (experimental)
 
-`iterator() ArrIterator(T)`
+```zig
+iterator() ArrIterator(T)
+```
 
 Instantiate a new `ArrIterator` of given type. See `ArrIterator` for more.
 
-`peek_next(index: usize) !T`
+```zig
+peek_next(index: usize) !T
+```
 
 Given an index, return the value that comes AFTER the given index. Can error `NextIndexOutOfBounds`
 
-`peek_prev(index: usize) !T`
+```zig
+peek_prev(index: usize) !T
+```
+
 Given an index, return the value that comes BEFORE the given index. Can error `PrevIndexOutOfBounds`
 
 ### ArrIterator
@@ -96,16 +127,22 @@ An `ArrIterator` is a helper struct to help iterate over the arrays. This iterat
 
 #### Members
 
-`items: []const T`
+```zig
+items: []const T
+```
 
 A constant of the given type of items. 
 
-`index: usize = 0`
+```zig
+index: usize = 0
+```
 
 The current index we are at in the iterator. This is essentially a private member.
 
 #### Member methods
 
-`next() ?T`
+```zig
+next() ?T
+```
 
 Iterate to the next index. Returns `null` if we are at the end of the array.
