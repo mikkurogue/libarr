@@ -192,6 +192,7 @@ pub fn FixedArray(comptime T: type) type {
     };
 }
 
+/// Helper struct to iterate on one of the above arrays
 fn ArrIterator(comptime T: type) type {
     return struct {
         items: []const T,
@@ -200,6 +201,7 @@ fn ArrIterator(comptime T: type) type {
 
         const Self = @This();
 
+        /// Move to the next item in the array
         pub fn next(self: *Self) ?T {
             if (self.index >= self.items.len) {
                 return null;
