@@ -1,14 +1,14 @@
 /// THIS IS JUST A PLAYGROUND FILE FOR ALL THE WEIRD
 /// SHIT IM BUILDING
 const std = @import("std");
-const Array = @import("array.zig");
+const libarr = @import("array.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const StringArrFixed = Array.FixedArray([]const u8);
-    var str_arr = try StringArrFixed.init(allocator, 5);
+    const StringArr = libarr.Array([]const u8);
+    var str_arr = try StringArr.init(allocator, 5);
     defer str_arr.deinit();
 
     try str_arr.push("Hello"[0..]);

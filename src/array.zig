@@ -5,7 +5,7 @@ pub const Error = error{ InsufficientCapacity, NoItems, IndexOutOfBounds, NextIn
 
 /// An array with a Fixed size given on implementation.
 /// exposes methods to dynamically reallocate
-pub fn FixedArray(comptime T: type) type {
+pub fn Array(comptime T: type) type {
     return struct {
         allocator: Allocator,
         items: []T,
@@ -15,9 +15,9 @@ pub fn FixedArray(comptime T: type) type {
         const Self = @This();
 
         /// initialise a new array, requires an allocator and a size to allocate
-        /// size type and byte size is determined by the FixedArray(type) when initialising a new instance
+        /// size type and byte size is determined by the Array(type) when initialising a new instance
         /// of this module
-        pub fn init(allocator: Allocator, capacity: usize) !FixedArray(T) {
+        pub fn init(allocator: Allocator, capacity: usize) !Array(T) {
             var buffer = try allocator.alloc(T, capacity);
 
             return .{ .allocator = allocator, .items = buffer[0..capacity], .len = 0, .capacity = capacity };
@@ -207,7 +207,7 @@ fn ArrIterator(comptime T: type) type {
 }
 
 /// TODO: add index to shift from, starting point
-fn rotate_left(comptime T: type, arr: *FixedArray(T)) !void {
+fn rotate_left(comptime T: type, arr: *Array(T)) !void {
     if (arr.len == 0) {
         return error.NoItems;
     }
@@ -226,7 +226,7 @@ fn rotate_left(comptime T: type, arr: *FixedArray(T)) !void {
 }
 
 /// TODO: add index to shift from, starting point
-fn rotate_right(comptime T: type, arr: *FixedArray(T)) !void {
+fn rotate_right(comptime T: type, arr: *Array(T)) !void {
     if (arr.len == 0) {
         return Error.NoItems;
     }
@@ -247,7 +247,7 @@ fn rotate_right(comptime T: type, arr: *FixedArray(T)) !void {
 }
 
 /// shift all items from the start of the array 1 position to the right
-fn shift_right(comptime T: type, arr: *FixedArray(T)) !void {
+fn shift_right(comptime T: type, arr: *Array(T)) !void {
     if (arr.len == 0) {
         return Error.NoItems;
     }
@@ -258,7 +258,7 @@ fn shift_right(comptime T: type, arr: *FixedArray(T)) !void {
     }
 }
 
-fn shift_right_from(comptime T: type, arr: *FixedArray(T), idx: usize) !void {
+fn shift_right_from(comptime T: type, arr: *Array(T), idx: usize) !void {
     if (arr.len == 0) {
         return Error.NoItems;
     }
@@ -275,9 +275,9 @@ fn shift_right_from(comptime T: type, arr: *FixedArray(T), idx: usize) !void {
 
 /// when shifting right, and we may need more space in the array
 /// double the capacity in memory for the array
-/// TODO: think if we want to even re-allocate for FixedArray, or if we just make
-/// FixedArray dynamic to be either Fixed or not, so renaming to Array
-fn shift_right_reallocate(comptime T: type, arr: *FixedArray(T)) !void {
+/// TODO: think if we want to even re-allocate for Array, or if we just make
+/// Array dynamic to be either Fixed or not, so renaming to Array
+fn shift_right_reallocate(comptime T: type, arr: *Array(T)) !void {
     if ((arr.len + 1) > arr.capacity) {
         var new_buf_items = try arr.allocator.alloc(T, arr.capacity * 2);
         @memcpy(
