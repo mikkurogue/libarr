@@ -14,7 +14,7 @@ pub fn main() !void {
     try str_arr.push("Hello"[0..]);
     try str_arr.push("World!"[0..]);
 
-    try str_arr.reverse();
+    // try str_arr.reverse();
 
     var iter = str_arr.iterator();
 
@@ -23,4 +23,25 @@ pub fn main() !void {
         if (v == null) break;
         std.debug.print("Value from iterator: {s}\n", .{v.?});
     }
+}
+
+test "Test Filter" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
+    const NumArr = libarr.Array(i32);
+    var num_arr = try NumArr.init(allocator, 5);
+    defer num_arr.deinit();
+
+    try num_arr.push(0);
+    try num_arr.push(1);
+    try num_arr.push(2);
+    try num_arr.push(3);
+    try num_arr.push(4);
+
+    std.debug.print("Pre filter {any}\n", .{num_arr.items[0..num_arr.len]});
+
+    try num_arr.filter(3);
+
+    std.debug.print("After filter {any}\n", .{num_arr.items[0..num_arr.len]});
 }

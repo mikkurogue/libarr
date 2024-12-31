@@ -133,6 +133,12 @@ peek_prev(index: usize) !T
 
 Given an index, return the value that comes BEFORE the given index. Can error `PrevIndexOutOfBounds`
 
+```zig
+reverse() !void
+```
+
+Reverse the array. Its just that simple.
+
 ### ArrIterator
 
 An `ArrIterator` is a helper struct to help iterate over the arrays. This iterator does not mutate the array in anyway.

@@ -130,12 +130,24 @@ pub fn Array(comptime T: type) type {
 
         // remove an item in the array at given index
         // then shift items to the left to re-organise indeces
-        pub fn remove_at(self: *Self, idx: u8) !void {
+        pub fn remove_at(self: *Self, idx: usize) !void {
             if (self.len == 0) {
                 return Error.NoItems;
             }
 
-            self.items[idx] = undefined;
+            if (idx >= self.len) {
+                return Error.IndexOutOfBounds;
+            }
+
+            // Shift elements to the left to fill the gap
+            for (idx..self.len - 1) |i| {
+                self.items[i] = self.items[i + 1];
+            }
+
+            // Mark the last element as undefined
+            self.items[self.len - 1] = undefined;
+
+            // Reduce the length
             self.len -= 1;
         }
 
@@ -182,6 +194,7 @@ pub fn Array(comptime T: type) type {
             return self.items[index - 1];
         }
 
+        /// reverse the array
         pub fn reverse(self: *Self) !void {
             if (self.len == 0) {
                 return Error.NoItems;
@@ -199,6 +212,25 @@ pub fn Array(comptime T: type) type {
                 // Move indices closer
                 start += 1;
                 end -= 1;
+            }
+        }
+
+        /// filter the array and remove all instances of {predicate}
+        /// from the array.
+        /// This is better than js one because we dont replace it with undefined
+        /// we just shift things to the left. js is dogwater
+        pub fn filter(self: *Self, predicate: T) !void {
+            var iter = self.iterator();
+            var idx: usize = 0;
+            while (idx < self.len) {
+                const value: ?T = iter.next();
+                if (value == null) break;
+
+                if (value == predicate) {
+                    try self.remove_at(idx);
+                } else {
+                    idx += 1;
+                }
             }
         }
     };
