@@ -13,6 +13,9 @@ pub fn main() !void {
 
     try str_arr.push("Hello"[0..]);
     try str_arr.push("World!"[0..]);
+
+    try str_arr.reverse();
+
     var iter = str_arr.iterator();
 
     while (true) {
