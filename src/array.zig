@@ -140,7 +140,6 @@ pub fn Array(comptime T: type) type {
         }
 
         // Advanced array methods
-        // TODO: Add these methods
 
         /// shifts an item in the array to a different index towards the head
         /// this preserves values in the array, so it is more of a circular shift
@@ -181,6 +180,26 @@ pub fn Array(comptime T: type) type {
             }
 
             return self.items[index - 1];
+        }
+
+        pub fn reverse(self: *Self) !void {
+            if (self.len == 0) {
+                return Error.NoItems;
+            }
+
+            var start: usize = 0;
+            var end: usize = self.len - 1;
+
+            while (start < end) {
+                // Swap elements at `start` and `end`
+                const temp = self.items[start];
+                self.items[start] = self.items[end];
+                self.items[end] = temp;
+
+                // Move indices closer
+                start += 1;
+                end -= 1;
+            }
         }
     };
 }
