@@ -159,7 +159,7 @@ pub fn Array(comptime T: type) type {
 
         /// shifts an item in the array to a different index towards the head
         /// this preserves values in the array, so it is more of a circular shift
-        /// TODO_ add index to start shift
+        /// TODO: add index to start shift
         pub fn left_shift(self: *Self) !void {
             try rotate_left(T, self);
         }
