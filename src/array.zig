@@ -114,6 +114,8 @@ pub fn Array(comptime T: type) type {
                 return Error.NoItems;
             }
 
+            // SAFETY: Uninitialize the item so when the len is correctly updated to
+            // reflect the pointer
             self.items[self.len - 1] = undefined;
             self.len -= 1;
         }
@@ -144,7 +146,9 @@ pub fn Array(comptime T: type) type {
                 self.items[i] = self.items[i + 1];
             }
 
-            // Mark the last element as undefined
+            // SAFETY: Mark the last element as undefined
+            // since we need to reduce length to accurately reflect the array
+            // whilst also making sure the pointer is uninitialized
             self.items[self.len - 1] = undefined;
 
             // Reduce the length
